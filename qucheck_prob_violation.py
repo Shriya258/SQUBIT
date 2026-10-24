@@ -2,43 +2,65 @@ from hypothesis import given, strategies as st
 from qiskit.quantum_info import Statevector
 import numpy as np
 
+# 1. Import your original edge case to verify it's caught
+from prob_violation_edgecase_example import buggy_probability_state
 
-# Import your validation function or logic
+
 def check_qiskit_probability(state_vector: Statevector):
+  """Physics validator: Catches unnormalized states cleanly without tracebacks."""
   amplitudes = state_vector.data
   total_prob = np.sum(np.abs(amplitudes) ** 2)
 
   if not np.isclose(total_prob, 1.0, atol=1e-7):
-    # Successfully flags the violation instead of crashing with a traceback
+    # Successfully flags the hidden bug instead of crashing
     return False
   return True
 
 
-# Strategy to generate random complex amplitude pairs that DO NOT sum to 1.0 (Flawed Physics)
-@given(
-    real_part=st.floats(min_value=1.5, max_value=5.0),
-    imag_part=st.floats(min_value=0.0, max_value=2.0),
-)
-def test_pbt_probability_violation(real_part, imag_part):
-  # Construct a deliberately unnormalized quantum state vector
-  flawed_state = Statevector([real_part + 1j * imag_part, 0.0])
+# 2. Property-Based Test: Dynamically fuzzes your edgecase pattern
+@given(amplitude_val=st.floats(min_value=1.1, max_value=10.0, exclude_min=True))
+def test_pbt_hidden_probability_bugs(amplitude_val):
+  """PBT that generates a spectrum of hidden buggy quantum states
 
-  # Property: The validator MUST return False (caught violation) and NOT raise an error
-  result = check_qiskit_probability(flawed_state)
+  violating physics laws (similar to your edgecase), ensuring the
+  validator catches every single one cleanly.
+  """
+  # Create a hidden bug dynamically using variations of your edgecase structure
+  hidden_buggy_state = Statevector([amplitude_val, 0.0])
 
+  # Run the validator
+  is_valid = check_qiskit_probability(hidden_buggy_state)
+
+  # Invariant: Physics-violating code must always be caught (return False)
   assert (
-      result is False
-  ), "PBT Failed: Unnormalized state was incorrectly approved!"
+      is_valid is False
+  ), f- "PBT Missed Bug: State with amplitude {amplitude_val} passed validation!"
 
 
 if __name__ == "__main__":
-  # Run the property-based test manually or via pytest
-  print("Running Property-Based Testing (PBT) for Probability Violation...")
+  print("==================================================")
+  print("RUNNING PBT ON EDGECASE & GENERATED HIDDEN BUGS")
+  print("==================================================")
+
+  # First, verify it catches your specific static edgecase file
+  print("[Test 1] Checking static edgecase from file...")
+  static_result = check_qiskit_probability(buggy_probability_state)
+  assert (
+      static_result is False
+  ), "Static edgecase failed to be caught!"
+  print("-> [SUCCESS] Static edgecase from file caught cleanly!")
+
+  # Second, run the full property-based test suite
+  print(
+      "\n[Test 2] Running Hypothesis PBT across multiple generated edge"
+      " cases..."
+  )
   try:
-    test_pbt_probability_violation()
+    test_pbt_hidden_probability_bugs()
     print(
-        "[PASSED] PBT successfully verified that all generated flawed states"
-        " were caught!"
+        "[SUCCESS] PBT execution complete! All hidden probability-violating"
+        " edge cases were successfully intercepted and flagged with zero"
+        " tracebacks."
     )
   except AssertionError as e:
     print(f"[FAILED] {e}")
