@@ -1,8 +1,32 @@
 from qiskit.quantum_info import Statevector
+import numpy as np
 
-# PHYSICS FAILURE: These probabilities sum to 4.0 (2^2 + 0^2), not 1.0!
-bad_state = Statevector([2.0, 0.0])
 
-print("Is valid state vector according to Qiskit class?", bad_state.is_valid())
-# Note: Qiskit's Statevector class might auto-normalize or throw depending on how it's used,
-# but custom manual initializations in test generators often bypass this check.
+def check_qiskit_probability(state_vector: Statevector):
+  """Uses Qiskit's Statevector class to check if probabilities sum to 1.0."""
+  # Extract raw complex amplitudes from Qiskit's Statevector object
+  amplitudes = state_vector.data
+
+  # Calculate total probability
+  total_prob = np.sum(np.abs(amplitudes) ** 2)
+
+  # Check if it violates probability rules
+  if not np.isclose(total_prob, 1.0, atol=1e-7):
+    print(
+        f"[FLAGGED] Probability Violation: Qiskit Statevector probabilities"
+        f" sum to {total_prob}, violating conservation of probability!"
+    )
+    return False
+
+  print("[PASSED] Qiskit Statevector is properly normalized.")
+  return True
+
+
+# ==========================================
+# TESTING WITH A BUGGY QISKIT STATEVECTOR
+# ==========================================
+# Creating an unnormalized state vector where probabilities sum to 4.0
+buggy_state = Statevector([2.0, 0.0])
+
+print("Running Qiskit Probability Check...")
+check_qiskit_probability(buggy_state)
