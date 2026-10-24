@@ -1,6 +1,9 @@
 from qiskit.quantum_info import Statevector
 import numpy as np
 
+# IMPORT THE EDGECASE FROM YOUR CODE 1 FILE (edgecase.py)
+from edgecase import buggy_probability_state
+
 
 def check_qiskit_probability(state_vector: Statevector):
   """Uses Qiskit's Statevector class to check if probabilities sum to 1.0."""
@@ -23,10 +26,7 @@ def check_qiskit_probability(state_vector: Statevector):
 
 
 # ==========================================
-# TESTING WITH A BUGGY QISKIT STATEVECTOR
+# EXECUTE ON THE IMPORTED EDGECASE (Code 1)
 # ==========================================
-# Creating an unnormalized state vector where probabilities sum to 4.0
-buggy_state = Statevector([2.0, 0.0])
-
-print("Running Qiskit Probability Check...")
-check_qiskit_probability(buggy_state)
+print("Running Qiskit Probability Check on Edgecase...")
+check_qiskit_probability(buggy_probability_state)
