@@ -1,16 +1,13 @@
 from qiskit.quantum_info import Statevector
 import numpy as np
 
-# IMPORT THE EDGECASE FROM YOUR CODE 1 FILE (edgecase.py)
-from edgecase import buggy_probability_state
+# Import the edgecase using your exact file name
+from prob_violating_edgecase_example import buggy_probability_state
 
 
 def check_qiskit_probability(state_vector: Statevector):
   """Uses Qiskit's Statevector class to check if probabilities sum to 1.0."""
-  # Extract raw complex amplitudes from Qiskit's Statevector object
   amplitudes = state_vector.data
-
-  # Calculate total probability
   total_prob = np.sum(np.abs(amplitudes) ** 2)
 
   # Check if it violates probability rules
@@ -26,7 +23,7 @@ def check_qiskit_probability(state_vector: Statevector):
 
 
 # ==========================================
-# EXECUTE ON THE IMPORTED EDGECASE (Code 1)
+# EXECUTE ON THE IMPORTED EDGECASE FILE
 # ==========================================
 print("Running Qiskit Probability Check on Edgecase...")
 check_qiskit_probability(buggy_probability_state)
