@@ -13,8 +13,8 @@ def check_tsirelson_bound(chsh_value: float):
   return True
 
 
-# 2. Property-Based Test: Dynamically fuzzes CHSH parameter values
-@given(chsh_val=st.floats(min_value=2.01, max_value=4.0))
+# 2. Property-Based Test: Fuzzes unphysical values strictly ABOVE Tsirelson's bound (> 2.8284)
+@given(chsh_val=st.floats(min_value=2.85, max_value=4.0))
 def test_pbt_hidden_tsirelson_bugs(chsh_val):
   """PBT that generates varied CHSH values beyond the quantum limit,
 
@@ -23,7 +23,7 @@ def test_pbt_hidden_tsirelson_bugs(chsh_val):
   is_valid = check_tsirelson_bound(chsh_val)
   assert (
       is_valid is False
-  ), f"PBT Missed Bug: CHSH value {chsh_val} passed validation!"
+  ), f"PBT Missed Bug: Unphysical CHSH value {chsh_val} passed validation!"
 
 
 if __name__ == "__main__":
@@ -39,8 +39,8 @@ if __name__ == "__main__":
 
   # Second, run the full property-based test suite
   print(
-      "\n[Test 2] Running Hypothesis PBT across multiple generated CHSH"
-      " values..."
+      "\n[Test 2] Running Hypothesis PBT across unphysical CHSH values (>"
+      " 2.8284)..."
   )
   try:
     test_pbt_hidden_tsirelson_bugs()
