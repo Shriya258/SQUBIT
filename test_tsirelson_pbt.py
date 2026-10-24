@@ -20,10 +20,7 @@ def test_pbt_hidden_tsirelson_bugs(chsh_val):
 
   ensuring the validator intercepts every single violation cleanly.
   """
-  # Run the validator
   is_valid = check_tsirelson_bound(chsh_val)
-
-  # Invariant: Values exceeding Tsirelson's bound must always be caught (return False)
   assert (
       is_valid is False
   ), f"PBT Missed Bug: CHSH value {chsh_val} passed validation!"
@@ -38,7 +35,7 @@ if __name__ == "__main__":
   print("[Test 1] Checking static tsirelson edgecase from file...")
   static_result = check_tsirelson_bound(buggy_chsh_value)
   assert static_result is False, "Static tsirelson edgecase failed to be caught!"
-  print("-> [SUCCESS] Static tsirelson edgecase from file caught cleanly!")
+  print("-> [SUCCESS] Static tsirelson edgecase caught successfully!")
 
   # Second, run the full property-based test suite
   print(
@@ -47,9 +44,6 @@ if __name__ == "__main__":
   )
   try:
     test_pbt_hidden_tsirelson_bugs()
-    print(
-        "[SUCCESS] PBT execution complete! All super-quantum CHSH violations"
-        " were successfully intercepted."
-    )
+    print("Executed successfully, no bugs found.")
   except AssertionError as e:
     print(f"[FAILED] {e}")
