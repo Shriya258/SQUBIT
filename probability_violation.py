@@ -1,8 +1,8 @@
 from qiskit.quantum_info import Statevector
 import numpy as np
 
-# Import the edgecase using your exact file name
-from prob_violating_edgecase_example import buggy_probability_state
+# Rectified import: using your exact filename 'prob_violation_edgecase_example'
+from prob_violation_edgecase_example import buggy_probability_state
 
 
 def check_qiskit_probability(state_vector: Statevector):
